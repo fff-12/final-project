@@ -42,9 +42,9 @@ class GameSprite(sprite.Sprite):
 class Player(GameSprite):
     def update(self):
         keys = key.get_pressed()
-        if keys[K_LEFT] and self.rect.x > 5:
+        if keys[K_a] and self.rect.x > 5:
             self.rect.x -= self.speed
-        if keys[K_RIGHT] and self.rect.x < win_width - 80:
+        if keys[K_d] and self.rect.x < win_width - 80:
             self.rect.x += self.speed
     def fire(self):
         bullet = Bullet("bullet.png", self.rect.centerx - 5, self.rect.top, 15, 20, -15)
@@ -81,10 +81,19 @@ class Bullet(GameSprite):
     def __init__(self, sprite_img, sprite_x, sprite_y, size_x, size_y, sprite_speed):
         super().__init__(sprite_img, sprite_x, sprite_y, size_x, size_y, sprite_speed)
         # self.image = transform.rotate(self.image, 90)
+
     def update(self):
-        self.rect.y += self.speed
+        e = key.get_pressed()
+        if e[K_UP]:
+            self.rect.y += self.speed
+        elif e[K_DOWN]:
+            self.rect.y -= self.speed
+        elif e[K_RIGHT]:
+            self.rect.x += self.speed
+        elif e[K_LEFT]:
+            self.rect.x -= self.speed
         # зникає, якщо дійде до краю екрана
-        if self.rect.y < 0:
+        if self.rect.y < 0 or self.rect.y > 500 or self.rect.x < 0 or self.rect.x > 700:
             self.kill()
 
 win_width = 700
@@ -125,7 +134,7 @@ while run:
         if e.type == QUIT:
             run = False
         elif e.type == KEYDOWN and not finish: ###
-            if e.key == K_SPACE:
+            if e.key == K_UP or K_DOWN or K_LEFT or K_RIGHT:
                 if num_fire < 20 and rel_time == False:
                     num_fire += 1
                     fire_sound.play()
